@@ -35,7 +35,6 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 
-
 interface FormData {
   name: string;
   email: string;
@@ -47,7 +46,6 @@ interface FormData {
 
 export default function RequestInfoForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
- 
 
   const [formData, setFormData] = useState({
     name: "",
@@ -76,7 +74,7 @@ export default function RequestInfoForm() {
     EmailSAddress: "personEmail",
   });
 
-  console.log(setresponse)
+  console.log(setresponse);
 
   const handleSelect = (value: string) => {
     setFormData((prev: FormData) => ({
