@@ -103,9 +103,9 @@ export default function RequestInfoForm() {
       const data = await response.body
       console.log("data - ", data);
 
-      setresponse({
-        EmailSentTo: data.EmailSentTo || "test123",
-      });
+      // setresponse({
+      //   EmailSentTo: data.EmailSentTo || "test123",
+      // });
 
       // Redirect to thank you page or home
       // router.push('/thankyou');
