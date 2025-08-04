@@ -68,9 +68,13 @@ export default function RequestInfoForm() {
     }));
   };
 
-  const [response, setResponse] = useState({
-    EmailSentTo: "emailSent",
-  });
+  //emailSent: "Alexcol123456ss@gmail.com"
+
+  const [response, setResponse] = useState([
+    {
+      EmailSentTo: "emailSent",
+    },
+  ]);
 
   const handleSelect = (value: string) => {
     setFormData((prev: FormData) => ({
@@ -102,7 +106,7 @@ export default function RequestInfoForm() {
       // Example: set the response as a stringified value, or update your state shape as needed
       const data = await response.json();
       console.log("data ----- ", data.data);
-      setResponse({ EmailSentTo: data.data.emailSent });
+      setResponse((prev) => [...prev, { EmailSentTo: data.data.emailSent }]);
 
       // setresponse({
       //   EmailSentTo: data.EmailSentTo || "test123",
