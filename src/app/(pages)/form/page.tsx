@@ -44,10 +44,14 @@ interface FormData {
   message: string;
 }
 
+interface ResponseItem {
+  EmailSentTo: string;
+}
+
 export default function RequestInfoForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
     phone: "",
@@ -56,7 +60,8 @@ export default function RequestInfoForm() {
     message: "",
   });
 
-  // console.log(formData);
+  // Fixed: Remove the initial dummy data and use proper typing
+  const [response, setResponse] = useState<ResponseItem[]>([]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -67,14 +72,6 @@ export default function RequestInfoForm() {
       [name]: value,
     }));
   };
-
-  //emailSent: "Alexcol123456ss@gmail.com"
-
-  const [response, setResponse] = useState([
-    {
-      EmailSentTo: "emailSent",
-    },
-  ]);
 
   const handleSelect = (value: string) => {
     setFormData((prev: FormData) => ({
@@ -91,7 +88,7 @@ export default function RequestInfoForm() {
 
     try {
       // Connect to your n8n workflow via an API route
-      const response: Response = await fetch("/api/submit-form", {
+      const apiResponse: Response = await fetch("/api/submit-form", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -99,21 +96,25 @@ export default function RequestInfoForm() {
         body: JSON.stringify(formData),
       });
 
-      if (!response.ok) {
+      if (!apiResponse.ok) {
         throw new Error("Failed to submit form");
       }
 
-      // Example: set the response as a stringified value, or update your state shape as needed
-      const data = await response.json();
+      const data = await apiResponse.json();
       console.log("data ----- ", data.data);
+
+      // Fixed: Add new response to the array properly
       setResponse((prev) => [...prev, { EmailSentTo: data.data.emailSent }]);
 
-      // setresponse({
-      //   EmailSentTo: data.EmailSentTo || "test123",
-      // });
-
-      // Redirect to thank you page or home
-      // router.push('/thankyou');
+      // Optional: Clear form after successful submission
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        service: "",
+        budget: "",
+        message: "",
+      });
     } catch (error: unknown) {
       console.error("Error submitting form:", error);
       alert(
@@ -289,34 +290,88 @@ export default function RequestInfoForm() {
             </p>
           </CardFooter>
         </Card>
+      </div>
 
-        <div className="bg-gray-50">
-          <div className="mt-20">Admin Dasboard</div>
-          {JSON.stringify(response)}
+      {/* Admin Dashboard Section - Full width, only show if there are responses */}
+      {response.length > 0 && (
+        <div className="w-full bg-gradient-to-r from-slate-50 to-gray-100 mt-12 py-8 px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="mb-6">
+              <h3 className="text-2xl font-bold text-gray-800 mb-2">
+                Admin Dashboard
+              </h3>
+              <p className="text-gray-600">
+                Recent form submissions and email notifications
+              </p>
+            </div>
 
-          <div>
-            <Table className="border  bg-green-200">
-              <TableCaption>A list of your recent invoices.</TableCaption>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[100px]">Email Address </TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Method</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow>
-                  <TableCell className="font-medium">INV001</TableCell>
-                  <TableCell>{response.EmailSentTo}</TableCell>
-                  <TableCell>Credit Card</TableCell>
-                  <TableCell className="text-right">$250.00</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+            <Card className="shadow-lg border-0">
+              <CardHeader className="bg-gradient-to-r from-slate-600 to-gray-700 text-white">
+                <CardTitle className="text-lg">Form Submissions</CardTitle>
+                <CardDescription className="text-slate-200">
+                  Total submissions: {response.length}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-slate-100 hover:bg-slate-100">
+                      <TableHead className="font-semibold text-slate-700 py-4">
+                        Submission ID
+                      </TableHead>
+                      <TableHead className="font-semibold text-slate-700">
+                        Email Address
+                      </TableHead>
+                      <TableHead className="font-semibold text-slate-700">
+                        Status
+                      </TableHead>
+                      <TableHead className="font-semibold text-slate-700">
+                        Time
+                      </TableHead>
+                      <TableHead className="font-semibold text-slate-700 text-right">
+                        Date
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {response.map((item, index) => (
+                      <TableRow
+                        key={index}
+                        className="hover:bg-slate-50 transition-colors border-b"
+                      >
+                        <TableCell className="font-mono text-sm bg-slate-50 font-medium">
+                          SUB-{String(index + 1).padStart(3, "0")}
+                        </TableCell>
+                        <TableCell className="font-medium text-slate-800">
+                          {item.EmailSentTo}
+                        </TableCell>
+                        <TableCell>
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            ✓ Email Sent
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-slate-600">
+                          {new Date().toLocaleTimeString("en-US", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </TableCell>
+                        <TableCell className="text-right text-slate-600">
+                          {new Date().toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
