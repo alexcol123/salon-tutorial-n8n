@@ -68,7 +68,7 @@ export default function RequestInfoForm() {
     }));
   };
 
-  const [response, setresponse] = useState({
+  const [response] = useState({
     EmailSentTo: "emailSent",
   });
 
