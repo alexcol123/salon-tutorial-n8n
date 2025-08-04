@@ -8,7 +8,6 @@ import { ArrowLeft } from "lucide-react";
 import {
   Table,
   TableBody,
-
   TableCell,
   TableHead,
   TableHeader,
@@ -46,6 +45,8 @@ interface FormData {
 
 interface ResponseItem {
   EmailSentTo: string;
+  Message: string;
+  Budget: string;
 }
 
 export default function RequestInfoForm() {
@@ -60,7 +61,6 @@ export default function RequestInfoForm() {
     message: "",
   });
 
-  // Fixed: Remove the initial dummy data and use proper typing
   const [response, setResponse] = useState<ResponseItem[]>([]);
 
   const handleChange = (
@@ -103,8 +103,12 @@ export default function RequestInfoForm() {
       const data = await apiResponse.json();
       console.log("data ----- ", data.data);
 
-      // Fixed: Add new response to the array properly
-      setResponse((prev) => [...prev, { EmailSentTo: data.data.emailSent }]);
+      // Fixed: Add new response with all three fields
+      setResponse((prev) => [...prev, { 
+        EmailSentTo: data.data.emailSent, 
+        Message: data.data.message, 
+        Budget: data.data.budget  
+      }]);
 
       // Optional: Clear form after successful submission
       setFormData({
@@ -295,7 +299,7 @@ export default function RequestInfoForm() {
       {/* Admin Dashboard Section - Full width, only show if there are responses */}
       {response.length > 0 && (
         <div className="w-full bg-gradient-to-r from-slate-50 to-gray-100 mt-12 py-8 px-4">
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-7xl mx-auto">
             <div className="mb-6">
               <h3 className="text-2xl font-bold text-gray-800 mb-2">
                 Admin Dashboard
@@ -313,60 +317,78 @@ export default function RequestInfoForm() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-0">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-slate-100 hover:bg-slate-100">
-                      <TableHead className="font-semibold text-slate-700 py-4">
-                        Submission ID
-                      </TableHead>
-                      <TableHead className="font-semibold text-slate-700">
-                        Email Address
-                      </TableHead>
-                      <TableHead className="font-semibold text-slate-700">
-                        Status
-                      </TableHead>
-                      <TableHead className="font-semibold text-slate-700">
-                        Time
-                      </TableHead>
-                      <TableHead className="font-semibold text-slate-700 text-right">
-                        Date
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {response.map((item, index) => (
-                      <TableRow
-                        key={index}
-                        className="hover:bg-slate-50 transition-colors border-b"
-                      >
-                        <TableCell className="font-mono text-sm bg-slate-50 font-medium">
-                          SUB-{String(index + 1).padStart(3, "0")}
-                        </TableCell>
-                        <TableCell className="font-medium text-slate-800">
-                          {item.EmailSentTo}
-                        </TableCell>
-                        <TableCell>
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            ✓ Email Sent
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-slate-600">
-                          {new Date().toLocaleTimeString("en-US", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </TableCell>
-                        <TableCell className="text-right text-slate-600">
-                          {new Date().toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          })}
-                        </TableCell>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-slate-100 hover:bg-slate-100">
+                        <TableHead className="font-semibold text-slate-700 py-4 min-w-[120px]">
+                          Submission ID
+                        </TableHead>
+                        <TableHead className="font-semibold text-slate-700 min-w-[200px]">
+                          Email Address
+                        </TableHead>
+                        <TableHead className="font-semibold text-slate-700 min-w-[150px]">
+                          Budget
+                        </TableHead>
+                        <TableHead className="font-semibold text-slate-700 min-w-[250px]">
+                          Message
+                        </TableHead>
+                        <TableHead className="font-semibold text-slate-700 min-w-[120px]">
+                          Status
+                        </TableHead>
+                        <TableHead className="font-semibold text-slate-700 min-w-[100px]">
+                          Time
+                        </TableHead>
+                        <TableHead className="font-semibold text-slate-700 text-right min-w-[120px]">
+                          Date
+                        </TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {response.map((item, index) => (
+                        <TableRow
+                          key={index}
+                          className="hover:bg-slate-50 transition-colors border-b"
+                        >
+                          <TableCell className="font-mono text-sm bg-slate-50 font-medium">
+                            SUB-{String(index + 1).padStart(3, "0")}
+                          </TableCell>
+                          <TableCell className="font-medium text-slate-800">
+                            {item.EmailSentTo}
+                          </TableCell>
+                          <TableCell className="text-slate-700">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                              {item.Budget}
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-slate-600 max-w-[250px]">
+                            <div className="truncate" title={item.Message}>
+                              {item.Message || "No message provided"}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                              ✓ Email Sent
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-slate-600">
+                            {new Date().toLocaleTimeString("en-US", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </TableCell>
+                          <TableCell className="text-right text-slate-600">
+                            {new Date().toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </CardContent>
             </Card>
           </div>
