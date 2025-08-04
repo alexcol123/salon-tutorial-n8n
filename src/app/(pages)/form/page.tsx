@@ -101,8 +101,8 @@ export default function RequestInfoForm() {
 
       // Example: set the response as a stringified value, or update your state shape as needed
       const data = await response.json();
-      console.log("data --- ", data);
-      setResponse({ EmailSentTo: data.emailSent });
+      console.log("data --- ", data.data);
+      setResponse({ EmailSentTo: data.data.emailSent });
 
       // setresponse({
       //   EmailSentTo: data.EmailSentTo || "test123",
