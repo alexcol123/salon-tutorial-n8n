@@ -8,7 +8,7 @@ import { ArrowLeft } from "lucide-react";
 import {
   Table,
   TableBody,
-  TableCaption,
+
   TableCell,
   TableHead,
   TableHeader,
