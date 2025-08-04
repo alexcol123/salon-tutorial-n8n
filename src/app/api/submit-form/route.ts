@@ -60,6 +60,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       message: "Form submitted successfully",
+      data: responseData,
     });
   } catch (error: unknown) {
     // Handle errors
