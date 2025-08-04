@@ -68,7 +68,7 @@ export default function RequestInfoForm() {
     }));
   };
 
-  const [response] = useState({
+  const [response, setResponse] = useState({
     EmailSentTo: "emailSent",
   });
 
@@ -100,8 +100,9 @@ export default function RequestInfoForm() {
       }
 
       // Example: set the response as a stringified value, or update your state shape as needed
-      const data = await response.json()
+      const data = await response.json();
       console.log("data --- ", data);
+      setResponse({ EmailSentTo: data.emailSent });
 
       // setresponse({
       //   EmailSentTo: data.EmailSentTo || "test123",
@@ -294,7 +295,7 @@ export default function RequestInfoForm() {
               <TableCaption>A list of your recent invoices.</TableCaption>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[100px]">Invoice</TableHead>
+                  <TableHead className="w-[100px]">Email Address </TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Method</TableHead>
                   <TableHead className="text-right">Amount</TableHead>
@@ -303,7 +304,7 @@ export default function RequestInfoForm() {
               <TableBody>
                 <TableRow>
                   <TableCell className="font-medium">INV001</TableCell>
-                  <TableCell>Paid</TableCell>
+                  <TableCell>{response.EmailSentTo}</TableCell>
                   <TableCell>Credit Card</TableCell>
                   <TableCell className="text-right">$250.00</TableCell>
                 </TableRow>
