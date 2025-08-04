@@ -56,7 +56,7 @@ export default function RequestInfoForm() {
     message: "",
   });
 
-  console.log(formData);
+  // console.log(formData);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -69,12 +69,8 @@ export default function RequestInfoForm() {
   };
 
   const [response, setresponse] = useState({
-    myField: "value",
-    EmailSentTo: "personName",
-    EmailSAddress: "personEmail",
+    EmailSentTo: "emailSent",
   });
-
-  console.log(setresponse);
 
   const handleSelect = (value: string) => {
     setFormData((prev: FormData) => ({
@@ -102,6 +98,12 @@ export default function RequestInfoForm() {
       if (!response.ok) {
         throw new Error("Failed to submit form");
       }
+
+      // Example: set the response as a stringified value, or update your state shape as needed
+      const data = await response.json();
+      setresponse({
+        EmailSentTo: data.EmailSentTo || 'test123'
+      });
 
       // Redirect to thank you page or home
       // router.push('/thankyou');
